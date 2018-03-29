@@ -4,31 +4,39 @@ var router = express.Router();
 var session = require('express-session');
 var sess;
 
+function slugify(text) {
+
+    return text.toString().toLowerCase()
+      .replace(/\s+/g, '-')        // Replace spaces with -
+      .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+      .replace(/\-\-+/g, '-')      // Replace multiple - with single -
+      .replace(/^-+/, '')          // Trim - from start of text
+      .replace(/-+$/, '');         // Trim - from end of text
+}
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	
-	sess = req.session;
-	if(!sess.email) { res.redirect('/');}
-	
+
     req.getConnection(function(error, conn) {
-        conn.query('SELECT * FROM users where is_admin != 1 ORDER BY id DESC',function(err, rows, fields) {
+        conn.query('SELECT * FROM pages',function(err, rows, fields) {
             console.log(rows);
-            res.render('users', { title: 'User Listing',results:rows });
+            res.render('pages/pages', { title: 'Page Listing', results:rows });
         });
     });
 
 });
 
 router.get('/add', function(req, res, next) {
-	res.render('add', { title: 'Add User',layout:false });
+	sess = req.session;
+	if(!sess.email) { res.redirect('/');}
+	res.render('pages/add', { title: 'Add Pages' });
 });
 
 router.get('/edit/(:id)', function(req, res, next) {
-	sess = req.session;
-	if(!sess.email) { res.redirect('/');}
+
     req.getConnection(function(error, conn) {
-        conn.query('SELECT * FROM users WHERE id = ' + req.params.id,function(err, rows, fields) {
-            res.render('edit', { title: 'Edit User',results:rows });
+        conn.query('SELECT * FROM pages WHERE id = ' + req.params.id,function(err, rows, fields) {
+            res.render('pages/edit', { title: 'Edit Page',results:rows });
         });
     });
 });
@@ -56,23 +64,21 @@ router.post('/edit', function(req, res, next) {
 });
 router.post('/add', function(req, res, next) {
 
-    var user = {
-        name: req.body.name,
-        age: parseInt(req.body.age),
-        email: req.body.email,
-        password: req.body.password,
-
+    var pages = {
+        title: req.body.title,
+        description: req.body.description,
+        keywords: req.body.keywords,
+		slug:slugify(req.body.title)
     }
 	
-	var sql = 'INSERT INTO users(name,age,email,password) values("' + user.name + '", ' + user.age + ', "' +  user.email + '", "' +  user.password + '")';
-    console.log(sql);
-	console.log(user);
+	var sql = 'INSERT INTO pages(title,description,keywords,slug) values("' + pages.title + '", "' + pages.description + '", "' +  pages.keywords + '", "' +  pages.slug + '")';
+	console.log(sql);
     req.getConnection(function(error, conn) {
 		
             conn.query(sql, function(err, result) {
                 //if (!err) {
-					console.log('User Added');
-                    res.redirect('/users')
+					console.log('Page Added');
+                    res.redirect('/pages')
 
                //}
         });
