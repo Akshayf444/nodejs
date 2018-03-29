@@ -1,0 +1,25 @@
+<h1>{{title}} <a href="/users/add" class="btn btn-xs btn-success pull-right">Add</a></h1>
+<div > 
+    <table class="table table-bordered">
+        <tr>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Age</td>
+            <td>Actions</td>
+        </tr>
+        {{#each results}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td>{{this.email}}</td>
+                <td>{{this.age}}</td>
+                <td>
+                    
+                    <a href="/users/edit/{{this.id}}" class="btn btn-xs btn-warning">Edit</a>
+                    <a href="/users/delete/{{this.id}}" class="btn btn-xs btn-danger">Delete</a>
+
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+
+</div>
