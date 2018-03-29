@@ -24,17 +24,36 @@ router.get('/edit/(:id)', function(req, res, next) {
     });
 });
 
-router.post('/edit/(:id)', function(req, res, next) {
+router.post('/edit', function(req, res, next) {
     var user = {
-        name: req.params.name.escape().trim(),
-        age: req.params.age.escape().trim(),
-        email: req.params.email.escape().trim(),
-        password: req.params.password.escape().trim(),
+        name: req.params.name,
+        age: req.params.age,
+        email: req.params.email,
+        password: req.params.password,
 
     }
-    
+    console.log(user);
     req.getConnection(function(error, conn) {
             conn.query('UPDATE users SET ? WHERE id = ' + req.params.id, user, function(err, result) {
+                if (err) {
+                    res.redirect('/users')
+
+                }
+        });
+    });
+                
+});
+router.post('/add', function(req, res, next) {
+    var user = {
+        name: req.params.name,
+        age: req.params.age,
+        email: req.params.email,
+        password: req.params.password,
+
+    }
+    console.log(user);
+    req.getConnection(function(error, conn) {
+            conn.query('INSERT INTO users SET ? ', user, function(err, result) {
                 if (err) {
                     res.redirect('/users')
 
