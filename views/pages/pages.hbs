@@ -1,20 +1,20 @@
 <h1>{{title}}</h1><a href="pages/add" class="pull-right">Add Pages</a>
 <div class="row">
-<form>
-<select name="page" class="form-control" onclick="this.form.submit">
+<form method="get">
+<select name="page" class="form-control" onchange="this.form.submit()">
 	<option>Select Page</option>
 	{{#each results}}
 		<option value="{{this.slug}}">{{this.title}}</option>
 	{{/each}}
 </select>
 </form>
-
+<br/>
 <div>
 				<form action="/pages/edit" method="post">
-				    {{#each results}}
+				    {{#each result}}
 					<input type="hidden" name="id" value="{{this.id}}">
 					<div class="form-group">
-						<input type="text" name="title" value="" placeholder="Title" value="{{this.title}}" class="form-control">
+						<input type="text" name="title" placeholder="Title" value="{{this.title}}" class="form-control">
 					</div>
 					<div class="form-group">
 						<textarea name="description" value="" placeholder="Description"  class="form-control">{{this.description}}</textarea>

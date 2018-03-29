@@ -3,6 +3,7 @@ var router = express.Router();
 
 var session = require('express-session');
 var sess;
+var row;
 
 function slugify(text) {
 
@@ -16,11 +17,22 @@ function slugify(text) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
     req.getConnection(function(error, conn) {
         conn.query('SELECT * FROM pages',function(err, rows, fields) {
-            console.log(rows);
-            res.render('pages/pages', { title: 'Page Listing', results:rows });
+			if(req.query.page){
+				var sql = 'SELECT * FROM pages where slug = "' + req.query.page + '"';
+			}else{
+				var sql = "";
+			}
+				conn.query(sql,function(err, result, fields) {
+					if(req.query.page){
+
+						row = result;
+					}
+					res.render('pages/pages', { title: 'Page Listing', results:rows,result:row });
+
+				});
+			//console.log(row);
         });
     });
 
@@ -32,6 +44,7 @@ router.get('/add', function(req, res, next) {
 	res.render('pages/add', { title: 'Add Pages' });
 });
 
+/*
 router.get('/edit/(:id)', function(req, res, next) {
 
     req.getConnection(function(error, conn) {
@@ -39,23 +52,23 @@ router.get('/edit/(:id)', function(req, res, next) {
             res.render('pages/edit', { title: 'Edit Page',results:rows });
         });
     });
-});
+});*/
 
 router.post('/edit', function(req, res, next) {
 	sess = req.session;
 	if(!sess.email) { res.redirect('/');}
-    var user = {
-        name: req.body.name,
-        age: parseInt(req.body.age),
-        email: req.body.email,
-        password: req.body.password,
-
+    
+    var pages = {
+        title: req.body.title,
+        description: req.body.description,
+        keywords: req.body.keywords,
+		slug:slugify(req.body.title)
     }
-    console.log(user);
+	
     req.getConnection(function(error, conn) {
-            conn.query('UPDATE users SET ? WHERE id = ' + req.body.id, user, function(err, result) {
+        conn.query('UPDATE pages SET ? WHERE id = ' + req.body.id, pages, function(err, result) {
                 //if (!err) {
-                    res.redirect('/users')
+                    res.redirect('/pages')
 
                 //}
         });
@@ -72,7 +85,7 @@ router.post('/add', function(req, res, next) {
     }
 	
 	var sql = 'INSERT INTO pages(title,description,keywords,slug) values("' + pages.title + '", "' + pages.description + '", "' +  pages.keywords + '", "' +  pages.slug + '")';
-	console.log(sql);
+
     req.getConnection(function(error, conn) {
 		
             conn.query(sql, function(err, result) {
