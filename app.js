@@ -6,6 +6,7 @@ var logger = require('morgan');
 var sessions = require('express-session');
 
 var usersRouter = require('./routes/users');
+var pagesRouter = require('./routes/pages');
 
 var app = express();
 
@@ -57,11 +58,20 @@ app.get('/', function(req, res, next) {
 
 app.post('/', function(req, res, next) {
 	session = req.session;
-	if(req.body.email == 'mohite.akshay118@gmail.com' && req.body.password == "123456"){
-		session.email = req.body.email;
-		res.redirect('/users');
-	}
-	
+	req.getConnection(function(error, conn) {
+        conn.query('SELECT * FROM users where email = "' + req.body.email + '" and password = "' + req.body.password + '"',function(err, rows, fields) {
+			if(rows[0].is_admin){
+				session.email = req.body.email;
+				if(rows[0].is_admin == 1){
+					session.is_admin = rows[0].is_admin;
+					res.redirect('/users');
+				}
+			}else{
+				console.log('invalid login');
+			}
+			
+		});
+    });	
 });
 
 app.get('/logout',function(req,res){
@@ -75,6 +85,7 @@ app.get('/logout',function(req,res){
 });
 
 app.use('/users', usersRouter);
+app.use('/pages', pagesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
