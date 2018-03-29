@@ -3,14 +3,16 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var sessions = require('express-session');
 
-var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
 
 var mysql = require('mysql')
- 
+var session;
+
+
 /**
  * This middleware provides a consistent API 
  * for MySQL connections during request/response life cycle
@@ -45,8 +47,33 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(sessions({secret: 'adqwqcxcxcz'}));
 
-app.use('/', indexRouter);
+//app.use('/', indexRouter);
+
+app.get('/', function(req, res, next) {
+	res.render('index', { title: 'Login',layout:false });
+});
+
+app.post('/', function(req, res, next) {
+	session = req.session;
+	if(req.body.email == 'mohite.akshay118@gmail.com' && req.body.password == "123456"){
+		session.email = req.body.email;
+		res.redirect('/users');
+	}
+	
+});
+
+app.get('/logout',function(req,res){
+	req.session.destroy(function(err) {
+		if(err) {
+			console.log(err);
+		} else {
+			res.redirect('/');
+		}
+	});
+});
+
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

@@ -6,6 +6,8 @@
   </head>
   <body>
       <div class="container">
+		  WELCOME {{req.session.email}}
+		 <a href="/logout" class="pull-right">Logout</a>
         {{{body}}}
       </div>
   </body>
