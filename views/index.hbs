@@ -6,9 +6,12 @@
   </head>
 	<body>
       <div class="container">
-
+		{{#each pages}}
+			<a href="/pages/{{this.slug}}">{{this.title}}</a>
+		{{/each}}
+		
 		<h1>{{title}}</h1>
-
+		
 		<form action="/" method="post">
 
 				<div class="form-group">

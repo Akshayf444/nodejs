@@ -53,21 +53,25 @@ app.use(sessions({secret: 'adqwqcxcxcz'}));
 //app.use('/', indexRouter);
 
 app.get('/', function(req, res, next) {
-	res.render('index', { title: 'Login',layout:false });
+	req.getConnection(function(error, conn) {
+        conn.query('SELECT * FROM pages',function(err, rows, fields) {
+			res.render('index', { title: 'Login',layout:false,pages:rows });
+		});
+    });		
 });
 
 app.post('/', function(req, res, next) {
 	session = req.session;
 	req.getConnection(function(error, conn) {
         conn.query('SELECT * FROM users where email = "' + req.body.email + '" and password = "' + req.body.password + '"',function(err, rows, fields) {
-			if(rows[0].is_admin){
+			if(rows[0]){
 				session.email = req.body.email;
 				if(rows[0].is_admin == 1){
 					session.is_admin = rows[0].is_admin;
 					res.redirect('/users');
 				}
 			}else{
-				console.log('invalid login');
+				res.redirect('/');
 			}
 			
 		});

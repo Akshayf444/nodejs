@@ -17,6 +17,9 @@ function slugify(text) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+	sess = req.session;
+	if(!sess.email) { res.redirect('/');}
+	
     req.getConnection(function(error, conn) {
         conn.query('SELECT * FROM pages',function(err, rows, fields) {
 			if(req.query.page){
@@ -24,15 +27,32 @@ router.get('/', function(req, res, next) {
 			}else{
 				var sql = "";
 			}
-				conn.query(sql,function(err, result, fields) {
+			console.log(sql);
+			conn.query(sql,function(err, result, fields) {
 					if(req.query.page){
 
 						row = result;
+	
+					}else{
+						row = null;
 					}
 					res.render('pages/pages', { title: 'Page Listing', results:rows,result:row });
 
 				});
-			//console.log(row);
+
+        });
+    });
+
+});
+
+router.get('/(:slug)', function(req, res, next) {
+    req.getConnection(function(error, conn) {
+		var sql = 'SELECT * FROM pages where slug = "' + req.params.slug + '"';
+        conn.query(sql,function(err, rows, fields) {
+			conn.query('SELECT * FROM pages',function(err, pages, fields) {
+				res.render('pages/view', { results:rows,layout:false,pages:pages });
+			});
+
         });
     });
 
@@ -90,7 +110,7 @@ router.post('/add', function(req, res, next) {
 		
             conn.query(sql, function(err, result) {
                 //if (!err) {
-					console.log('Page Added');
+					//console.log('Page Added');
                     res.redirect('/pages')
 
                //}
@@ -99,11 +119,5 @@ router.post('/add', function(req, res, next) {
                 
 });
 
-router.get('/delete/(:id)', function(req, res, next) {
-    req.getConnection(function(error, conn) {
-        conn.query('DELETE FROM users WHERE id = ' + req.params.id,function(err, rows) {
-             res.redirect('/users')
-        });
-    });
-});
+
 module.exports = router;

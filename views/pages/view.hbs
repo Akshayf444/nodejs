@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+	
+	{{#each results}}
+	<meta name="keywords" 
+         content="{{this.keywords}}">
+	{{/each}}
+  </head>
+	<body>
+		<div class="container">
+		<a href="/">Login</a>
+	  {{#each pages}}
+			<a href="/pages/{{this.slug}}">{{this.title}}</a>
+		{{/each}}
+		
+{{#each results}}
+ 	<h1>{{this.title}}</h1>
+	<p>{{this.description}}</p>
+{{/each}}
+
+      </div>
+  </body>
+</html>
