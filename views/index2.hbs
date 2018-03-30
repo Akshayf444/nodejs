@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+	<body>
+      <div class="container">
+		<a href="/">Login</a>
+		{{#each pages}}
+			<a href="/pages/view/{{this.slug}}">{{this.title}}</a>
+		{{/each}}
+		
+		<h1>WELCOME {{title}}</h1>
+		
+      </div>
+  </body>
+</html>

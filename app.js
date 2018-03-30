@@ -69,6 +69,8 @@ app.post('/', function(req, res, next) {
 				if(rows[0].is_admin == 1){
 					session.is_admin = rows[0].is_admin;
 					res.redirect('/users');
+				}else{
+					res.redirect('/user/index');
 				}
 			}else{
 				res.redirect('/');
@@ -77,7 +79,13 @@ app.post('/', function(req, res, next) {
 		});
     });	
 });
-
+app.get('/user/index', function(req, res, next) {
+	req.getConnection(function(error, conn) {
+        conn.query('SELECT * FROM pages',function(err, rows, fields) {
+			res.render('index2', { title: req.session.email ,layout:false,pages:rows });
+		});
+    });		
+});
 app.get('/logout',function(req,res){
 	req.session.destroy(function(err) {
 		if(err) {
