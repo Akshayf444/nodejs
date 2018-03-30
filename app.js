@@ -52,7 +52,13 @@ app.use(sessions({secret: 'adqwqcxcxcz'}));
 
 //app.use('/', indexRouter);
 
+var con = mysql.createConnection(dbOptions);
+
 app.get('/', function(req, res, next) {
+	con.connect(function(err) {
+		if (err) res.status(500).send('Not Connected to database');
+		console.log("Connected!");
+	});
 	req.getConnection(function(error, conn) {
         conn.query('SELECT * FROM pages',function(err, rows, fields) {
 			res.render('index', { title: 'Login',layout:false,pages:rows });
