@@ -45,7 +45,7 @@ router.get('/', function(req, res, next) {
 
 });
 
-router.get('/(:slug)', function(req, res, next) {
+router.get('/view/(:slug)', function(req, res, next) {
     req.getConnection(function(error, conn) {
 		var sql = 'SELECT * FROM pages where slug = "' + req.params.slug + '"';
         conn.query(sql,function(err, rows, fields) {
@@ -58,7 +58,7 @@ router.get('/(:slug)', function(req, res, next) {
 
 });
 
-router.get('/add', function(req, res, next) {
+router.get('/add/page', function(req, res, next) {
 	sess = req.session;
 	if(!sess.email) { res.redirect('/');}
 	res.render('pages/add', { title: 'Add Pages' });
@@ -105,7 +105,7 @@ router.post('/add', function(req, res, next) {
     }
 	
 	var sql = 'INSERT INTO pages(title,description,keywords,slug) values("' + pages.title + '", "' + pages.description + '", "' +  pages.keywords + '", "' +  pages.slug + '")';
-
+	console.log(sql);
     req.getConnection(function(error, conn) {
 		
             conn.query(sql, function(err, result) {
